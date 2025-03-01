@@ -1,19 +1,3 @@
-document.addEventListener('DOMContentLoaded', function() {
-    const serviceHeaders = document.querySelectorAll('.service h3');
-
-    serviceHeaders.forEach(header => {
-        header.addEventListener('click', function() {
-            // Remove active class from all headers
-            serviceHeaders.forEach(h => h.classList.remove('active'));
-            // Hide all paragraphs
-            document.querySelectorAll('.service p').forEach(p => p.style.display = 'none');
-            // Add active class to the clicked header
-            this.classList.add('active');
-            // Show the corresponding paragraph
-            this.nextElementSibling.style.display = 'block';
-        });
-    });
-});
 
 
 // carousel

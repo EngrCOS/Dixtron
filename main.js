@@ -1,11 +1,20 @@
-// main carousel
+// Main carousel
 const track = document.querySelector('.carousel-track');
-const slides = document.querySelectorAll('.carousel-slide');
+const slides = Array.from(document.querySelectorAll('.carousel-slide'));
 const prevBtn = document.querySelector('.control-prev');
 const nextBtn = document.querySelector('.control-next');
 const indicatorContainer = document.querySelector('.indicator-container');
-let index = 0;
+let index = 1;
 let autoSlideInterval;
+
+// Clone first and last slide for smooth infinite scroll
+const firstClone = slides[0].cloneNode(true);
+const lastClone = slides[slides.length - 1].cloneNode(true);
+track.appendChild(firstClone);
+track.insertBefore(lastClone, slides[0]);
+
+const allSlides = document.querySelectorAll('.carousel-slide');
+track.style.transform = `translateX(-${index * 100}%)`;
 
 // Create indicators dynamically
 slides.forEach((_, i) => {
@@ -13,7 +22,7 @@ slides.forEach((_, i) => {
     indicator.classList.add('indicator');
     if (i === 0) indicator.classList.add('active');
     indicator.addEventListener('click', () => {
-        moveToSlide(i);
+        moveToSlide(i + 1);
         resetAutoSlide();
     });
     indicatorContainer.appendChild(indicator);
@@ -21,27 +30,45 @@ slides.forEach((_, i) => {
 
 // Function to update active indicator
 const updateIndicators = () => {
+    const actualIndex = index === 0 ? slides.length - 1 : index === slides.length ? 0 : index - 1;
     document.querySelectorAll('.indicator').forEach((indicator, i) => {
-        indicator.classList.toggle('active', i === index);
+        indicator.classList.toggle('active', i === actualIndex);
     });
 };
 
 // Function to move slides
 const moveToSlide = (i) => {
     index = i;
+    track.style.transition = "transform 0.5s ease-in-out";
     track.style.transform = `translateX(-${index * 100}%)`;
     updateIndicators();
 };
 
-// Function to go to the next slide
+// Reset position when transitioning to clones
+track.addEventListener("transitionend", () => {
+    if (index === allSlides.length - 1) {
+        track.style.transition = "none";
+        index = 1;
+        track.style.transform = `translateX(-${index * 100}%)`;
+    }
+    if (index === 0) {
+        track.style.transition = "none";
+        index = slides.length;
+        track.style.transform = `translateX(-${index * 100}%)`;
+    }
+});
+
+// Function to go to the next slide (smooth infinite loop)
 const nextSlide = () => {
-    index = (index === slides.length - 1) ? 0 : index + 1;
-    moveToSlide(index);
+    if (index < allSlides.length - 1) {
+        index++;
+        moveToSlide(index);
+    }
 };
 
 // Function to start auto-slide
 const startAutoSlide = () => {
-    autoSlideInterval = setInterval(nextSlide, 5000); // Change slide every 2 seconds
+    autoSlideInterval = setInterval(nextSlide, 5000); // Change slide every 5 seconds
 };
 
 // Function to reset auto-slide when user interacts
@@ -52,19 +79,21 @@ const resetAutoSlide = () => {
 
 // Event Listeners for Buttons
 prevBtn.addEventListener('click', () => {
-    index = (index === 0) ? slides.length - 1 : index - 1;
-    moveToSlide(index);
+    if (index > 0) {
+        index--;
+        moveToSlide(index);
+    }
     resetAutoSlide();
 });
 
 nextBtn.addEventListener('click', () => {
-    index = (index === slides.length - 1) ? 0 : index + 1;
-    moveToSlide(index);
+    nextSlide();
     resetAutoSlide();
 });
 
 // Start Auto Slide on Page Load
 startAutoSlide();
+
 
 //
 

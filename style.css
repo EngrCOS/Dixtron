@@ -510,6 +510,7 @@ a:hover {
     .our-service__dynamic-header h2 {
         margin-left: 0;
         margin-bottom: 10px;
+        margin-top: -5rem;
     }
 
     .our-service__dynamic-header .our-service__dynamic-button {
